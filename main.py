@@ -1,8 +1,8 @@
+# -*- coding: utf-8 -*-
 import tkinter as tk
 import os.path as op
 import json
-import bin.res
-from bin.res.gui import Gui
+import source
 
 
 def load_config():
@@ -15,7 +15,4 @@ def load_config():
 
 if __name__ == '__main__':
     load_config()
-    root = tk.Tk()
-    root.geometry(res.config['geometry'])
-    Gui(root)
-    root.mainloop()
+    Gui()
