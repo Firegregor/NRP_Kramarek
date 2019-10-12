@@ -1,0 +1,23 @@
+{
+  "name": "Katarzyna",
+  "geometry": "1200x650",
+  "verbose": false,
+  "interpret": 2,
+  "Card": {
+    "1200x650": {
+      "top": 20,
+      "monthspace": 20,
+      "off_x": 100,
+      "field_width": 20,
+      "field_height": 30
+    },
+    "600x325": {
+      "top": 10,
+      "monthspace": 10,
+      "off_x": 50,
+      "field_width": 10,
+      "field_height": 15
+    }
+  },
+  "Autor": "Grzegorz Kot"
+}
