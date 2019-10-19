@@ -5,8 +5,8 @@
 - Main menu
 - config popup
 - screan:
- - Card
- - Side menu:
+ * Card
+ * Side menu:
   - Input
   - Interpret
 

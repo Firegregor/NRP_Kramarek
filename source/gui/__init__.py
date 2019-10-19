@@ -1,1 +1,1 @@
-from source.gui.gui import Gui
+# -*- coding: utf-8 -*-

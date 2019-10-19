@@ -3,7 +3,7 @@ import tkinter as tk
 
 
 """
-Klasa odpowiedzialna za rysowanie ca³oœci programu
+Klasa odpowiedzialna za rysowanie calosci programu
 """
 class Gui:
     def __init__(self, verbose=False):
@@ -46,7 +46,7 @@ class Gui:
 
     def draw_data(self):
         """
-        Rysowanie temperatury, objawów, dat, numeru cyklu, numerów dni
+        Rysowanie temperatury, objawow, dat, numeru cyklu, numerow dni
         """
         pass
 
