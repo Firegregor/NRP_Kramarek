@@ -11,7 +11,7 @@ def load_config():
     with open(op.join(path, 'config', 'config.json')) as file:
         temp_config = json.loads(file.read())
         for param, value in temp_config.items():
-            config.config[param] = value
+            config.params[param] = value
 
 
 if __name__ == '__main__':

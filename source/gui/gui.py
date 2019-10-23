@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import config
 import tkinter as tk
 import config
 from source.gui.main_menu import Main_Menu
@@ -14,7 +15,7 @@ class Gui:
         print("init Gui")
         root = tk.Tk()
         self._rooot = root
-        root.geometry(config.config['geometry'])
+        root.geometry(config.params['geometry'])
         self.mainFrame = tk.Frame(root)
         self.mainFrame.pack()
 
