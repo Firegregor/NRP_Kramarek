@@ -1,7 +1,9 @@
 import config
+import tkinter as tk
+import tkinter.ttk as ttk
 
 
-class Side_Menu:
-    def __init__(self, master, gui):
+class SideMenu(ttk.Frame):
+    def __init__(self, master):
         self.master = master
-        self.gui = gui
+        super(Main_Menu, self).__init__(master.mainFrame)
