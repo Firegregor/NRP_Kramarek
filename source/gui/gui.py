@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import config
 import tkinter as tk
 
 
@@ -13,7 +14,7 @@ class Gui:
         self.main = Main_Menu(root,self)
         self.card = Card(root,self)
         self.side_menu = SideMenu(root,self)
-        root.geometry(res.config['geometry'])
+        root.geometry(config.params['geometry'])
         root.mainloop()
 
     def CardInit(self):

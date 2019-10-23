@@ -2,6 +2,7 @@
 import tkinter as tk
 import os.path as op
 import json
+import config
 from source.gui.gui import Gui
 
 
@@ -10,7 +11,7 @@ def load_config():
     with open(op.join(path, 'config', 'config.json')) as file:
         temp_config = json.loads(file.read())
         for param, value in temp_config.items():
-            res.config[param] = value
+            config.params[param] = value
 
 
 if __name__ == '__main__':
