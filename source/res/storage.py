@@ -1,5 +1,4 @@
-import datetime as dt
-import json
+import datetime as dt import json
 import os
 import res
 

@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 import tkinter as tk
+import config
+from source.gui.main_menu import Main_Menu
+from source.gui.side_menu import Side_Menu
+from source.gui.card import Card
 
 
 """
@@ -10,19 +14,23 @@ class Gui:
         print("init Gui")
         root = tk.Tk()
         self._rooot = root
-        self.main = Main_Menu(root,self)
-        self.card = Card(root,self)
-        self.side_menu = SideMenu(root,self)
-        root.geometry(res.config['geometry'])
+        root.geometry(config.config['geometry'])
+        self.mainFrame = tk.Frame(root)
+        self.mainFrame.pack()
+
+        self.main = Main_Menu(self)
+        self.main.grid()
+
+        self.card = Card(self)
+        self.side_menu = SideMenu(self)
         root.mainloop()
 
     def CardInit(self):
-        self.main.hide()
-        self.card.show()
-        self.side_menu.show()
+        self.main.grid_forget()
+        self.card.grid(row=0, column=0)
+        self.side_menu.grid(row=0, column=1)
 
     def update(self):
-        self.main.update()
         self.card.update()
         self.side_menu.update()
 

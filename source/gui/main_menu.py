@@ -1,18 +1,18 @@
-import res
+import config
 import datetime as dt
 import tkinter as tk
 import tkinter.ttk as ttk
 
 
-class MainMenu(ttk.Labelframe):
+class Main_Menu(ttk.Labelframe):
 
     def __init__(self, master):
-        super(MainMenu, self).__init__(master)
         self.master = master
+        super(Main_Menu, self).__init__(master.mainFrame)
 
         self.name = ttk.Entry(self)
         self.name.grid(row=4, column=3, sticky='nswe', columnspan=2)
-        self.name.insert(0, res.config['name'])
+        self.name.insert(0, config.config['name'])
 
         self.button1 = ttk.Button(self, text='Start', command=self.master.observation)
         self.button1.grid(row=1, column=2, columnspan=3)
