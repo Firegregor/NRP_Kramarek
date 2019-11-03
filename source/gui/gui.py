@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import config
 import tkinter as tk
 import config
 from source.gui.main_menu import MainMenu
@@ -12,56 +11,37 @@ Klasa odpowiedzialna za rysowanie calosci programu
 """
 class Gui:
     def __init__(self, verbose=False):
+        self._verbose = verbose
         root = tk.Tk()
         self._rooot = root
         root.geometry(config.params['geometry'])
         self.mainFrame = tk.Frame(root)
         self.mainFrame.pack()
 
-        print("init Gui")
+        self.Log("init Gui")
         self.main = MainMenu(self)
+        self.Log("MainMenu init done")
         self.main.grid()
+        self.Log("MainMenu on board")
 
-#        self.card = Card(self)
+        self.card = Card(self)
         self.side_menu = SideMenu(self)
         root.mainloop()
 
     def CardInit(self):
         self.main.grid_forget()
-#        self.card.grid(row=0, column=0)
+        self.card.grid(row=0, column=0)
         self.side_menu.grid(row=0, column=1)
+        self.update()
 
     def update(self):
-#        self.card.update()
+        self.card.update()
         self.side_menu.update()
 
-    def card_update(self):
-        self.blank()
-        self.draw_numbers()
-        self.draw_data()
-        self.draw_interpretation()
+    @property
+    def verbose(self):
+        return self._verbose
 
-    def blank(self):
-        """
-        Rysowanie pustej karty
-        """
-        pass
-
-    def draw_numbers(self):
-        """
-        Rysowanie zakresu temperatur
-        """
-        pass
-
-    def draw_data(self):
-        """
-        Rysowanie temperatury, objawow, dat, numeru cyklu, numerow dni
-        """
-        pass
-
-    def draw_interpretation(self):
-        """
-        Rysowanie naniesionej interpretacji
-        """
-        pass
-
+    def Log(self, msg):
+        if self._verbose:
+            print(type(self), msg)

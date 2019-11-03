@@ -17,7 +17,7 @@ def load_config():
 if __name__ == '__main__':
     try:
         load_config()
-        Gui()
+        Gui(verbose=True)
     except Exception as e:
         print(e)
         input()

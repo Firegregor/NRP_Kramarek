@@ -8,8 +8,9 @@ import tkinter.ttk as ttk
 class MainMenu(ttk.Labelframe):
 
     def __init__(self, master):
-        self.master = master
+        self.gui = master
         super(MainMenu, self).__init__(master.mainFrame)
+        self.Log("init started")
 
         self.name = ttk.Entry(self)
         self.name.grid(row=4, column=3, sticky='nswe', columnspan=2)
@@ -30,9 +31,14 @@ class MainMenu(ttk.Labelframe):
         self.day[1].grid(row=6, column=3)
         self.day[2].grid(row=6, column=4)
         [self._day[i].set(y) for i, y in enumerate([dt.datetime.now().year, dt.datetime.now().month, dt.datetime.now().day])]
+        self.Log("init done")
 
     def get_name(self):
         return self.name.get()
 
     def get_day(self):
         pass
+
+    def Log(self, msg):
+        if self.gui.verbose:
+            print(type(self), msg)
