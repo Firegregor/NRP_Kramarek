@@ -16,7 +16,16 @@ month = {x+1: y for x, y in enumerate(['styczeń', 'luty', 'marzec', 'kwiecień'
 config.params["visible day"] = 5
 config.params["selected day"] = 15
 config.params["cycle start"] = dt.datetime.now()
-config.params["card"] = {'canvas':(1000, 600)}
+config.params["card"] = {'canvas':(1000, 600), 
+    'oval_size': 20, 
+    'oval_text_offset': 35, 
+    'ovals':[
+    (50,400,'Godzina'),
+    (50,310,'Miejsce'),
+    (950, 500, 'Długość cyklu'),
+    (950, 410, 'Długość fazy\nniższej temp.'),
+    (950, 50, 'Nr cyklu')
+    ]}
 
 
 class Card(ttk.LabelFrame):
@@ -32,6 +41,7 @@ class Card(ttk.LabelFrame):
             self.display.pack_forget()
         width, heigth = config.params["card"]['canvas']
         self.display = tk.Canvas(self, width=width, height=heigth, bg='white')
+        self.display.bind('<ButtonPress-1>', self.mouse_handler)
         self.blank()
         self.draw_numbers()
         self.draw_data()
@@ -63,6 +73,11 @@ class Card(ttk.LabelFrame):
         for level in range(16):
             self.display.create_line(off_x, off_y + level * field_height, off_x + 40 * field_width,
                                      off_y + level * field_height, width = (level//14+1))
+
+        # koła
+        for oval in config.params['card']['ovals']:
+            self._draw_oval(*oval)
+
         self.Log("Blank done")
 
     def draw_numbers(self):
@@ -114,7 +129,40 @@ class Card(ttk.LabelFrame):
         """
         self.Log("Interpretation started")
 
-    def Log(self, msg):
-        if self.gui.verbose:
+    def mouse_handler(self, event):
+        self.Log('mysza na pozycji: {} x {}'.format(event.x, event.y))
+        if off_x + 40 * field_width < event.x:
+            pass
+        elif event.x < off_x:
+            if event.y > 200:
+                self.Log('person.change_place()')
+            else:
+                config.params['visible day'] -=1
+        else:
+            day = (event.x - off_x) // field_width
+            if event.y < off_y + field_height:
+                self.Log("self.person.act(day, 'akty')")
+            elif event.y > bottom:
+                self.Log("self.person.act(day, 'bo')")
+            else:
+                temp = 375 - (event.y - off_y + field_height // 3) // field_height
+                self.Log("Zapisz temperature {} w dniu {}".format(temp, day))
+        if event.x > 900 & event.y < 200:
+            config.params['visible day'] +=1
+        self.update()
+
+
+
+    def Log(self, msg, supress=1):
+        if self.gui.verbose>=supress:
             print(type(self), msg)
+
+    def _draw_oval(self, x,y,msg=''):
+        """
+        Rysowanie koła i podpisu na podstawie środka i zapisanej konfiguracji
+        """
+        size = config.params['card']['oval_size']
+        orect = [x-20, y-20, x+20, y+20]
+        self.display.create_oval(x-size, y-size, x+size, y+size, width=2)
+        self.display.create_text(x,y - config.params['card']['oval_text_offset'],text=msg)
 
