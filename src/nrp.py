@@ -8,10 +8,9 @@ class NRP:
     Nrp Controller class
     """
     def __init__(self, model: NrpModel, gui: NrpViev):
-        self.model = model
-        self.model.load()
         self.gui = gui
-        self.welcome()
+        name = self.welcome()
+        self.model = model.load(name)
 
     def welcome(self):
         """

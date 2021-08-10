@@ -7,12 +7,9 @@ class NrpModel(ABC):
     Abstract Model for NRP data storage
     """
 
+    @classmethod
     @abstractmethod
-    def __init__(self):
-        pass
-
-    @abstractmethod
-    def load(self):
+    def load(cls, name):
         pass
 
     @abstractmethod
