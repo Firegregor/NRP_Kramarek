@@ -1,25 +1,31 @@
 # NRP _Kramarek_
 
-# Parts
-## Gui
-- Main menu
-- config popup
-- screan:
- * Card
- * Side menu:
-  - Input
-  - Interpret
+## Overviev
 
-## Storage
-- config
-- cycles
+Program to store and viev cycles
 
-# Log
-## 19.09.2019
-Rozpiska z podzia³em na czêœci
-- Gui
-- Os
-- Storage
+## Parts
 
-## 27.09.2019
-> Kasia doda³a pierwszy zapis architektury
+Model - Holds and process data
+
+Gui - viev data and provide forms to insert data
+
+Controller - handles user interaction
+
+## Details
+
+- Model:
+  - Json Model:
+    + load from json file
+    - export to json file
+    - helper function for accessing data
+- Gui:
+  - Tkinter viev:
+    + welcome screen
+    - main window
+    V config window
+- Controller:
+  Nrp:
+    + initializing seqience
+    - config handling
+    - cycle navigation
