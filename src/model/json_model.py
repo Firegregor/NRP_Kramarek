@@ -12,18 +12,6 @@ class JsonModel(NrpModel):
     Json Model for NRP data storage
     """
 
-    __path = path_split(os.path.abspath(__file__))[0]
-
-
-    def __init__(self, name, cycles):
-        """
-        initialize model with None values
-        """
-        self.name = name
-        self.path = path_join(self.__path, f'{name}.json')
-        self._cycles = cycles
-        self._current_cycle = int(sorted(self._cycles.keys())[-1])
-
     @classmethod
     def load(cls, name):
         """
