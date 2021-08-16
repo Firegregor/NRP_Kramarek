@@ -18,16 +18,18 @@ class JsonModel(NrpModel):
         Loads from file or default values in case of non existing and return model.
         """
         name = name
-        path = path_join(cls.__path, f'{name}.json')
+        path = path_join(cls._path, f'{name}.json')
         if os.path.exists(path):
             with open(path) as model_dump:
-                cycles = json.loads(model_dump.read())
+                data = json.loads(model_dump.read())
         else:
-            cycles = {'1': "Default"}
-        return cls(name, cycles)
+            data = {'gui': {}, 'cycles': "Default"}
+        return cls(name, data, path)
 
-    def export(self, path):
-        pass
+    def export(self):
+        with open(self.path, 'w') as dump:
+            content = {'gui':self.gui_config, 'cycles':self.cycles}
+            dump.write(json.dumps(content, indent=2))
 
     def get_cycle(self, nr):
         pass

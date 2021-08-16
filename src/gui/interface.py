@@ -25,7 +25,7 @@ class NrpViev(ABC):
     def config_screen(cls):
         pass
 
-    @calssmethod
+    @classmethod
     @abstractmethod
     def config_apply(self, config=None):
         pass

@@ -31,9 +31,9 @@ class NRP:
         self.gui.mainloop()
 
     def set_config(self):
-        gui.config_screen()
-        gui.config_apply()
-        model.save_gui_config(gui.config)
+        self.gui.config_screen()
+        self.gui.config_apply()
+        model.save_gui_config(self.gui.config)
 
     def draw_user(self):
         logging.debug ('drawing user')

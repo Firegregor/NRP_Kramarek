@@ -10,16 +10,18 @@ class NrpModel(ABC):
     Abstract Model for NRP data storage
     """
 
-    _path = path_split(os.path.abspath(__file__))[0]
+    _path =  path_join(path_split(os.path.abspath(__file__))[0],
+                       '..', '..', 'res')
 
-    def __init__(self, name, cycles, config=None, path=None):
+    def __init__(self, name, data, path=None):
         """
         initialize model with None values
         """
         self.name = name
-        self.path = path_join(self._path, f'{name}.json')
-        self._cycles = cycles
-        self._current_cycle = int(sorted(self._cycles.keys())[-1])
+        self.path = path
+        self.cycles = data['cycles']
+        self.gui_config = data['gui']
+        self.export()
 
     @classmethod
     @abstractmethod
@@ -27,7 +29,7 @@ class NrpModel(ABC):
         pass
 
     @abstractmethod
-    def export(self, path):
+    def export(self):
         pass
 
     def save_gui_config(self, config):

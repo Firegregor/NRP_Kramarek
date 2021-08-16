@@ -17,7 +17,8 @@ Controller - handles user interaction
 - Model:
   - Json Model:
     + load from json file
-    - export to json file
+    + export to json file
+    - establish dict structure for model
     - helper function for accessing data
 - Gui:
   - Tkinter viev:
