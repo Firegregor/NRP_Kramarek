@@ -3,6 +3,7 @@ import logging
 import tkinter as tk
 from tkinter import ttk
 from src.gui.interface import NrpViev
+from src.gui.tk_config import ConfigScreen
 
 
 class TkViev(NrpViev):
@@ -10,14 +11,7 @@ class TkViev(NrpViev):
     Viev for NRP using tkinter
     """
 
-    config = {"General": {
-                'resolurion': "600x800",
-                'scale': '1',
-                'padding': '10',
-                'background color': 'lightgrey'},
-              'Model': {
-                'min temperature':'35.6',
-                'days offset': '0'}}
+    config = {}
 
     def __init__(self, set_config):
         self.root = tk.Tk()
@@ -27,10 +21,13 @@ class TkViev(NrpViev):
     @classmethod
     def welcome(cls, model_load):
         logging.info("welcome method called")
+        if not cls.config:
+            logging.debug("set default configuration")
+            cls.config_apply()
         window = tk.Tk()
         window.title("Witamy w NRP")
         PADDING = int(cls.config['General']['padding'])
-        BG = cls.config['General']['background color']
+        BG = cls.config['Colors']['background']
         window.configure(background=BG);
         tk.Label(window,
             text="Witamy, Z kim mamy dzisiaj przyjemność?",
@@ -67,51 +64,34 @@ class TkViev(NrpViev):
 
     @classmethod
     def default_config(cls):
-        pass
-
-    def welcome_screen(self, config_callback, user_callback):
-        pass
+        return {"General": {
+                'resolurion': "600x800",
+                'scale': 1,
+                'padding': 10,
+                },
+              'Colors':{
+                'background': 'lightgrey',
+                'forground': '000000'
+                },
+              'Model': {
+                'min temperature':35.6,
+                'days offset': 0
+                }
+        }
 
     @classmethod
     def config_screen(cls):
         logging.info("Config screen start")
         window = tk.Tk()
-        PADDING = int(cls.config['General']['padding'])/2
-        BG = cls.config['General']['background color']
         window.title("Config")
-        window.configure(background=BG);
-        params = {}
-        for name in cls.config:
-            logging.debug(f"loading {name}")
-            frame = ttk.LabelFrame(window, text=name)
-            params[name] = {key: ttk.Entry(frame) for key in cls.config[name]}
-            logging.debug('params cleated')
-            for i, (key, val) in enumerate(params[name].items()):
-                tk.Label(frame, text=key, bg=BG).grid(row=i, column=0, padx=PADDING, pady=PADDING)
-                val.insert(0,cls.config[name][key])
-                val.grid(row=i, column=1,padx=PADDING, pady=PADDING)
-            logging.debug("params displayed")
-            frame.pack(fill=tk.BOTH)
-        def default(*args):
-            logging.info(f"default reload")
-            cls.default_config()
-            for key,val in cls.config.items():
-                params[key].delete(0,tk.END)
-                params[key].insert(0,val)
-        def done(*args):
-            logging.info(f"close config window")
-            window.destroy()
-        def save(*_):
-            logging.info(f"saving configuration")
-            cls.config = {name:{k:val.get() for k,val in part.items()} for name,part in params.items()}
-            done()
-        ttk.Button(window ,text="Default", command=default).pack()
-        ttk.Button(window ,text="Ok", command=save).pack(side=tk.LEFT)
-        ttk.Button(window ,text="Cancel", command=done).pack(side=tk.RIGHT)
+        ConfigScreen(window, cls.config, cls.default_config, cls.config_apply)
         window.mainloop()
 
+    @classmethod
     def config_apply(self, config=None):
-        if config is not None:
+        if config is None:
+            self.config = self.default_config()
+        else:
             self.config = config
 
     def draw_card(self, config):

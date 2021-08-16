@@ -21,9 +21,16 @@ Controller - handles user interaction
     - helper function for accessing data
 - Gui:
   - Tkinter viev:
-    + welcome screen
+    V welcome screen:
+        + renders properly
+        - updates according to configuration
+        - provide list of known users
     - main window
     V config window
+        + as a separate window
+        + splited to categories
+        V render properly
+        - update configuration properly
 - Controller:
   Nrp:
     + initializing seqience
