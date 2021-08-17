@@ -12,10 +12,12 @@ class TkViev(NrpViev):
     """
 
     config = {}
+    initialized = False
 
     def __init__(self, set_config):
         self.root = tk.Tk()
-        self.apply_config()
+        self.root.geometry('1000x1000')
+        self.initialized = True
         self.set_config = set_config
 
     @classmethod
@@ -57,7 +59,6 @@ class TkViev(NrpViev):
             ).grid(row=2, column=2, padx=PADDING, pady=PADDING)
         window.mainloop()
 
-
     def mainloop(self):
         logging.debug('TkViev mainloop starts')
         self.root.mainloop()
@@ -89,11 +90,16 @@ class TkViev(NrpViev):
 
     @classmethod
     def config_apply(self, config=None):
+        logging.info(f'Config apply')
+        logging.debug(f'config={config}')
         if config is None:
             self.config = self.default_config()
         else:
             self.config = config
+        if self.initialized:
+            self.root.configure(background=self.config['Colors']['background'])
+            self.root.geometry(self.config['General']['geometry'])
 
-    def draw_card(self, config):
+    def draw_card(self):
         pass
 

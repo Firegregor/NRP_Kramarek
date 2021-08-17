@@ -29,7 +29,7 @@ class ColorConfig(tk.Frame):
         self.update()
 
     def update(self):
-        self.square.config(bg=self)
+        self.square.config(bg=self.get())
 
     def set(self, value):
         self._str = value

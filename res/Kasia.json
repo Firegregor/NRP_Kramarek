@@ -1,4 +1,18 @@
 {
-  "gui": {},
-  "cycles": "Default"
+  "gui": {
+    "General": {
+      "resolurion": "1600x800",
+      "scale": "1",
+      "padding": "10"
+    },
+    "Colors": {
+      "background": "lightgrey",
+      "forground": "#000000"
+    },
+    "Model": {
+      "min temperature": "35.6",
+      "days offset": "0"
+    }
+  },
+  "cycles": "None"
 }
