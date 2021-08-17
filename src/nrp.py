@@ -27,14 +27,18 @@ class NRP:
         self.model = self._model_class.load(name)
         self.gui = self._gui_class(self.set_config)
         self.gui.config_apply(self._gui_class.config)
+        self.model.save_gui_config(self.gui.config)
         logging.debug("NRP Controller - gui created")
-        self.draw_user()
+        self.draw_user(name)
         self.gui.mainloop()
 
     def set_config(self):
         self.gui.config_screen()
-        self.gui.config_apply()
         model.save_gui_config(self.gui.config)
 
-    def draw_user(self):
-        logging.debug ('drawing user')
+    def draw_user(self, name):
+        logging.debug(f'drawing user {name}')
+        self.gui.draw_card(self, name)
+
+    def get_name(self):
+        return self.model.name

@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 from src.gui.interface import NrpViev
 from src.gui.tk_config import ConfigScreen
+from src.gui.tk_cycle import CycleScreen
 
 
 class TkViev(NrpViev):
@@ -16,7 +17,7 @@ class TkViev(NrpViev):
 
     def __init__(self, set_config):
         self.root = tk.Tk()
-        self.root.geometry('1000x1000')
+        #self.root.geometry('1000x1000')
         self.initialized = True
         self.set_config = set_config
 
@@ -66,15 +67,18 @@ class TkViev(NrpViev):
     @classmethod
     def default_config(cls):
         return {"General": {
-                'resolurion': "600x800",
-                'scale': 1,
+                'resolurion': "1200x800",
                 'padding': 10,
                 },
               'Colors':{
                 'background': 'lightgrey',
-                'forground': '000000'
+                'forground': '#000000'
                 },
-              'Model': {
+              'Cycle': {
+                'width': 1000,
+                'height': 600,
+                'bg': 'white',
+                'scale': 1,
                 'min temperature':35.6,
                 'days offset': 0
                 }
@@ -100,6 +104,8 @@ class TkViev(NrpViev):
             self.root.configure(background=self.config['Colors']['background'])
             self.root.geometry(self.config['General']['geometry'])
 
-    def draw_card(self):
-        pass
+    def draw_card(self, data, name):
+        self.root.title(name)
+        self.cycle = CycleScreen(self.root, self.config['Cycle'], data)
+        self.cycle.pack()
 

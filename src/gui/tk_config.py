@@ -58,15 +58,18 @@ class ColorConfig(tk.Frame):
 class ConfigScreen(tk.Frame):
     CONFIG_TYPE = {"General": {
                 'resolurion': TextConfig,
-                'scale': ttk.Spinbox,
                 'padding': ttk.Spinbox,
                 },
               "Colors":{
                 'background': ColorConfig,
                 'forground': ColorConfig,
                 },
-              'Model': {
+              'Cycle': {
+                'width': ttk.Spinbox,
+                'height': ttk.Spinbox,
+                'bg': ColorConfig,
                 'min temperature': TempConfig,
+                'scale': ttk.Spinbox,
                 'days offset': ttk.Spinbox}}
 
     def __init__(self, window, config, default, save, *args, **kwargs):
