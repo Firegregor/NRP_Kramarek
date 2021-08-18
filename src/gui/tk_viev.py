@@ -66,23 +66,7 @@ class TkViev(NrpViev):
 
     @classmethod
     def default_config(cls):
-        return {"General": {
-                'resolurion': "1200x800",
-                'padding': 10,
-                },
-              'Colors':{
-                'background': 'lightgrey',
-                'forground': '#000000'
-                },
-              'Cycle': {
-                'width': 1000,
-                'height': 600,
-                'bg': 'white',
-                'scale': 1,
-                'min temperature':35.6,
-                'days offset': 0
-                }
-        }
+        return ConfigScreen.get_defaults()
 
     @classmethod
     def config_screen(cls):
