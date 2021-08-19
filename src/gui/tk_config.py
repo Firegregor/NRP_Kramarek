@@ -12,6 +12,14 @@ class TextConfig(ttk.Entry):
         self.insert(0,value)
 
 
+class IntConfig(ttk.Spinbox):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args,**kwargs)
+
+    def get(self):
+        return int(super().get())
+
+
 class TempConfig(ttk.Spinbox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs,values=[str(x/10) for x in range(350,367)])
@@ -41,8 +49,9 @@ class ColorConfig(tk.Frame):
         self.apply()
         self.square.bind('<ButtonPress-1>', self.update)
 
-    def update(self, *_):
-        self._str = None
+    def update(self, *_, rgb=True):
+        if rgb:
+            self._str = None
         self.apply()
 
     def apply(self):
@@ -56,6 +65,7 @@ class ColorConfig(tk.Frame):
             self.update()
         else:
             self._str = value
+            self.update(rgb=False)
 
     @property
     def color(self):
@@ -83,25 +93,33 @@ class ColorConfig(tk.Frame):
 class ConfigScreen(tk.Frame):
     CONFIG_TYPE = {"General": {
                 'resolurion': (TextConfig, '1200x800'),
-                'padding': (ttk.Spinbox, 10)
+                'padding': (IntConfig, 10)
                 },
               "Colors":{
                 'background': (ColorConfig, '#cfcfcf'),
                 'forground': (ColorConfig, '#000000'),
                 },
               'Cycle': {
-                'width': (ttk.Spinbox, 1000),
-                'height': (ttk.Spinbox, 600),
+                'width': (IntConfig, 1000),
+                'height': (IntConfig, 600),
                 'bg': (ColorConfig, '#ffffff'),
                 'min temperature': (TempConfig, 35.6),
-                'scale': (ttk.Spinbox, 1),
-                'days offset': (ttk.Spinbox, 0)
+                'scale': (IntConfig, 1),
+                'days offset': (IntConfig, 0),
+                'label width': (IntConfig, 50),
+                'padding': (IntConfig, 20),
+                'info height': (IntConfig, 15),
+                'symptom height': (IntConfig, 50),
+                'days displayed': (IntConfig, 40),
+                'temperature range': (IntConfig, 13),
                 }
             }
 
-    def __init__(self, window, config, default, save, *args, **kwargs):
+    def __init__(self, window, config, save, cycle=None, *args, **kwargs):
+        logging.info(f'Config window init - cycle={cycle}')
         self.window=window
         self.save = save
+        self.cycle = cycle
         super().__init__(window, *args, **kwargs)
         self.params = {}
         PADDING = int(config['General']['padding'])/2
@@ -120,7 +138,7 @@ class ConfigScreen(tk.Frame):
             frame.pack(fill=tk.BOTH)
         self.set_values(config)
         ttk.Button(self ,text="Default",
-         command=lambda: self.set_values(default())).pack()
+         command=lambda: self.set_values(self.get_defaults())).pack()
         ttk.Button(self ,text="Ok", command=self.save_current).pack(side=tk.LEFT)
         ttk.Button(self ,text="Cancel", command=self.done).pack(side=tk.RIGHT)
         self.pack()
@@ -137,10 +155,12 @@ class ConfigScreen(tk.Frame):
                 val.set(config[category][key])
 
     def save_current(self, *args):
-        logging.info(f"saving config")
+        logging.info(f"saving config - cycle={self.cycle}")
         config = {category: {key: val.get() for key,val in values.items()}
                      for category, values in self.params.items()}
-        self.save(config)
+        self.save(config=config)
+        logging.debug('update cycle')
+        self.cycle.update(config['Cycle'])
         self.done()
 
     def done(self, *args):

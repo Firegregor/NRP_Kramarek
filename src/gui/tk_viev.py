@@ -14,6 +14,7 @@ class TkViev(NrpViev):
 
     config = {}
     initialized = False
+    cycle = None
 
     def __init__(self, set_config):
         self.root = tk.Tk()
@@ -69,17 +70,18 @@ class TkViev(NrpViev):
         return ConfigScreen.get_defaults()
 
     @classmethod
-    def config_screen(cls):
-        logging.info("Config screen start")
+    def config_screen(cls, *_, cycle=None):
+        logging.info("Config screen start - cycle={cycle}")
         window = tk.Tk()
         window.title("Config")
-        ConfigScreen(window, cls.config, cls.default_config, cls.config_apply)
+        ConfigScreen(window, cls.config, cls.config_apply, cycle)
         window.mainloop()
 
     @classmethod
     def config_apply(self, config=None):
         logging.info(f'Config apply')
         logging.debug(f'config={config}')
+        logging.debug(f'cycle={self.cycle}')
         if config is None:
             self.config = self.default_config()
         else:
@@ -91,5 +93,6 @@ class TkViev(NrpViev):
     def draw_card(self, data, name):
         self.root.title(name)
         self.cycle = CycleScreen(self.root, self.config['Cycle'], data)
-        self.cycle.pack()
+        self.cycle.pack(side=tk.LEFT)
+        ttk.Button(text='Config', command=lambda: self.config_screen(cycle=self.cycle)).pack(side=tk.LEFT)
 
