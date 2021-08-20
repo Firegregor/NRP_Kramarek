@@ -100,18 +100,20 @@ class ConfigScreen(tk.Frame):
                 'forground': (ColorConfig, '#000000'),
                 },
               'Cycle': {
+                'days offset': (IntConfig, 0),
+                'min temperature': (TempConfig, 36.0),
+                'temperature range': (IntConfig, 16),
+                'days displayed': (IntConfig, 40),
                 'width': (IntConfig, 1000),
                 'height': (IntConfig, 600),
                 'bg': (ColorConfig, '#ffffff'),
-                'min temperature': (TempConfig, 35.6),
                 'scale': (IntConfig, 1),
-                'days offset': (IntConfig, 0),
-                'label width': (IntConfig, 50),
                 'padding': (IntConfig, 20),
+                'label width': (IntConfig, 50),
                 'info height': (IntConfig, 15),
-                'symptom height': (IntConfig, 50),
-                'days displayed': (IntConfig, 40),
-                'temperature range': (IntConfig, 13),
+                'symptom height': (IntConfig, 80),
+                'oval size': (IntConfig, 20),
+                'oval message': (IntConfig, 35),
                 }
             }
 

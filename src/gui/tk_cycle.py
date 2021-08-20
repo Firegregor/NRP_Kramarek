@@ -15,9 +15,10 @@ class CycleScreen(ttk.LabelFrame):
         self.config = config
         super().__init__(master,text=data.get_name(), *args, **kwargs)
         self.display = None
+        self.data_displayed = None
         self.update()
 
-    def update(self, config=None):
+    def update(self, config=None, data=None):
         logging.info('card update')
         if config is not None:
             logging.debug('New configuration')
@@ -64,16 +65,32 @@ class CycleScreen(ttk.LabelFrame):
 
         # table outline
         # self.display.create_rectangle(table_left,table_top, table_right, symp_padding, fill='red')
-        self.display.create_line(table_left, padding, table_left, symp_bottom)
-        self.display.create_line(table_right, padding, table_right, symp_bottom)
+        self.display.create_line(table_left, padding, table_left, symp_bottom, width=2)
+        self.display.create_line(table_right, padding, table_right, symp_bottom, width=2)
         # table vertical
-        for day,column in enumerate(range(table_left, table_right, field_width)):
+        for day,column in enumerate(range(table_left, table_right, field_width),1):
             self.display.create_line(column, table_top, column, symp_bottom)
-            #TODO: days
+            self.display.create_text(column+field_width//2, symp_padding-field_height//2, text=day)
         # table horizontal
-        for row in range(table_top,symp_padding, field_height):
+        for temp,row in enumerate(range(symp_padding, table_top, -field_height),int(config['min temperature']*10-1)):
             self.display.create_line(table_left, row, table_right, row)
+            if row > table_top + field_height and row < symp_padding - field_height:
+                if not temp % 5:
+                    self.display.create_text(table_left-field_width, row, text=temp/10)
+                else:
+                    self.display.create_text(table_left-field_width, row, text=f'.{temp%10}', anchor=tk.W)
 
+        # ovals
+
+        # Symptoms
+        self.display.create_text(table_left -padding//2, symp_padding + padding//5,
+                 text='Śluz\nszyjkowy:\nodczucie\nwygląd\nilość', anchor=tk.NE)
+
+    def _draw_oval(self, x, y, msg=''):
+        size = self.config["oval size"]
+        orect = [x-size, y-size, x+size, y+size]
+        self.display.create_oval(*orect, width=2)
+        self.display.create_text(x, y - self.config['oval message'], text=msg1)
     @property
     def canvas_config(self):
         return {key: val for key,val in self.config.items() if key in self.CANVAS}
