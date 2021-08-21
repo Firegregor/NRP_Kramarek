@@ -34,9 +34,9 @@ class CycleScreen(ttk.LabelFrame):
         if self.display is not None:
             self.display.pack_forget()
         self.display = tk.Canvas(self, **self.canvas_config)
-        self._draw_table()
+        self.draw_empty_card()
 
-    def _draw_table(self):
+    def draw_empty_card(self):
 
         # get data from config
         config = self.config
@@ -81,6 +81,11 @@ class CycleScreen(ttk.LabelFrame):
                     self.display.create_text(table_left-field_width, row, text=f'.{temp%10}', anchor=tk.W)
 
         # ovals
+        self._draw_oval(padding+label_width//2,table_top + 5*field_height, 'Godzina')
+        self._draw_oval(padding+label_width//2,table_top + 9*field_height, 'Miejsce')
+        self._draw_oval(table_right+label_width,table_top + config['oval message'], 'Nr cyklu')
+        self._draw_oval(table_right+label_width,symp_padding-4*field_height, 'Faza niższa')
+        self._draw_oval(table_right+label_width,symp_padding, 'Długość cyklu')
 
         # Symptoms
         self.display.create_text(table_left -padding//2, symp_padding + padding//5,
@@ -90,7 +95,8 @@ class CycleScreen(ttk.LabelFrame):
         size = self.config["oval size"]
         orect = [x-size, y-size, x+size, y+size]
         self.display.create_oval(*orect, width=2)
-        self.display.create_text(x, y - self.config['oval message'], text=msg1)
+        self.display.create_text(x, y - self.config['oval message'], text=msg)
+
     @property
     def canvas_config(self):
         return {key: val for key,val in self.config.items() if key in self.CANVAS}

@@ -27,11 +27,17 @@ Controller - handles user interaction
         - updates according to configuration
         - provide list of known users
     - main window
+        + empty table
+        + surrounding interface
+        - draw temperature
+        - draw symptoms
+        - draw comments
+        - draw special characters
     V config window
         + as a separate window
         + splited to categories
-        V render properly
-        - update configuration properly
+        + render properly
+        + update configuration properly
 - Controller:
   Nrp:
     + initializing seqience
