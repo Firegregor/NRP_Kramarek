@@ -4,8 +4,9 @@ from tkinter import ttk
 
 
 class TextConfig(ttk.Entry):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args,**kwargs)
+    def __init__(self, master, default, *args, **kwargs):
+        super().__init__(master,*args,**kwargs)
+        self.set(default)
 
     def set(self, value):
         self.delete(0,tk.END)
@@ -13,32 +14,31 @@ class TextConfig(ttk.Entry):
 
 
 class IntConfig(ttk.Spinbox):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args,**kwargs)
+    def __init__(self, master, default, from_, to, *args, **kwargs):
+        super().__init__(master,from_=from_,to=to,*args,**kwargs)
+        self._default=default
 
     def get(self):
         return int(super().get())
 
 
 class TempConfig(ttk.Spinbox):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args,**kwargs,values=[str(x/10) for x in range(350,367)])
+    def __init__(self, master, default, *args, **kwargs):
+        super().__init__(master, *args,**kwargs,values=[str(x/10) for x in range(350,367)])
 
     def get(self):
         return float(super().get())
 
 
 class ColorConfig(tk.Frame):
-    def __init__(self, master, *args, **kwargs):
+    def __init__(self, master, default, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self._str = None
         self.R=ttk.Spinbox(self, from_=0, to=255, width=4)
-        self.R.set('125')
         self.G=ttk.Spinbox(self, from_=0, to=255, width=4)
-        self.G.set('125')
         self.B=ttk.Spinbox(self, from_=0, to=255, width=4)
-        self.B.set('125')
         self.square = tk.Label(self, text=' '*5)
+        self.set(default)
         self.square.pack(side=tk.LEFT)
         tk.Label(self, text='R', bg='red').pack(side=tk.LEFT)
         self.R.pack(side=tk.LEFT)
@@ -93,27 +93,31 @@ class ColorConfig(tk.Frame):
 class ConfigScreen(tk.Frame):
     CONFIG_TYPE = {"General": {
                 'resolurion': (TextConfig, '1200x800'),
-                'padding': (IntConfig, 10)
+                'padding': (IntConfig, 10, 1, 20)
                 },
               "Colors":{
                 'background': (ColorConfig, '#cfcfcf'),
-                'forground': (ColorConfig, '#000000'),
                 },
               'Cycle': {
-                'days offset': (IntConfig, 0),
+                'days offset': (IntConfig, 0, 0, 500),
                 'min temperature': (TempConfig, 36.0),
-                'temperature range': (IntConfig, 16),
-                'days displayed': (IntConfig, 40),
-                'width': (IntConfig, 1000),
-                'height': (IntConfig, 600),
+                'temperature range': (IntConfig, 16, 10, 20),
+                'days displayed': (IntConfig, 40, 35, 60),
+                'width': (IntConfig, 1000, 800, 1500),
+                'height': (IntConfig, 600, 500, 800),
                 'bg': (ColorConfig, '#ffffff'),
-                'scale': (IntConfig, 1),
-                'padding': (IntConfig, 20),
-                'label width': (IntConfig, 50),
-                'info height': (IntConfig, 15),
-                'symptom height': (IntConfig, 80),
-                'oval size': (IntConfig, 20),
-                'oval message': (IntConfig, 35),
+                'scale': (IntConfig, 1, 1, 2),
+                'padding': (IntConfig, 20, 5, 50),
+                'label width': (IntConfig, 50, 20, 80),
+                'info height': (IntConfig, 15, 10, 25),
+                'symptom height': (IntConfig, 80, 50, 120),
+                'oval size': (IntConfig, 20, 15, 30),
+                'oval message': (IntConfig, 35, 20, 50),
+                'font type': (TextConfig, 'Times'),
+                'text color': (ColorConfig, '#000000'),
+                'text size': (IntConfig, 10, 5, 25),
+                'interface size': (IntConfig, 15, 7, 30),
+                'dot size': (IntConfig, 4, 2, 7),
                 }
             }
 
@@ -129,7 +133,7 @@ class ConfigScreen(tk.Frame):
         for category in self.CONFIG_TYPE:
             logging.debug(f"loading {category}")
             frame = ttk.LabelFrame(self, text=category)
-            self.params[category] = {key:val[0](frame)
+            self.params[category] = {key:val[0](frame, *val[1:])
                      for key,val in self.CONFIG_TYPE[category].items()}
             logging.debug(f'{category}: params created')
             for i, (key, wid) in enumerate(self.params[category].items()):

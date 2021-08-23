@@ -96,3 +96,5 @@ class TkViev(NrpViev):
         self.cycle.pack(side=tk.LEFT)
         ttk.Button(text='Config', command=lambda: self.config_screen(cycle=self.cycle)).pack(side=tk.LEFT)
 
+
+
