@@ -5,6 +5,7 @@ from tkinter import ttk
 
 test_temp_values = [366, 368, 358,365, 365,366]
 test_symp_values = ['','k5','k4','k3','s','mo']
+test_coments_values = ['sda', 'nieprzespana noc', '', 'alkohol']
 
 
 class CycleScreen(ttk.LabelFrame):
@@ -22,6 +23,7 @@ class CycleScreen(ttk.LabelFrame):
         self.cell=None
         self.data_displayed = {
             'temperature':test_temp_values+[0]*config['days displayed'],
+            'comments':test_coments_values+['']*config['days displayed'],
             'symptoms':test_symp_values+['']*config['days displayed']
             }
         self.big_font = ' '.join([
@@ -69,7 +71,7 @@ class CycleScreen(ttk.LabelFrame):
         table_right = table_left + days*field_width
         table_heigth = temp_range*field_height
         symp_padding = table_top + table_heigth
-        symp_bottom = symp_padding + config['symptom height']
+        self.symp_bottom = symp_padding + config['symptom height']
         fg = config['text color']
         self.cell = (field_width, field_height)
 
@@ -101,9 +103,9 @@ class CycleScreen(ttk.LabelFrame):
             width=2)
         self.display.create_line( # all the way to the bottom
             padding,
-            symp_bottom,
+            self.symp_bottom,
             table_right,
-            symp_bottom,
+            self.symp_bottom,
             width=2)
         self.display.create_line( # under cycle day
             padding,
@@ -124,13 +126,13 @@ class CycleScreen(ttk.LabelFrame):
             table_left,
             padding,
             table_left,
-            symp_bottom,
+            self.symp_bottom,
             width=2)
         self.display.create_line( # table right
             table_right,
             padding,
             table_right,
-            symp_bottom,
+            self.symp_bottom,
             width=2)
         # table vertical
         for day,column in enumerate(range(table_left, table_right,
@@ -139,7 +141,7 @@ class CycleScreen(ttk.LabelFrame):
                 column,
                 table_top,
                 column,
-                symp_bottom)
+                self.symp_bottom)
             self.display.create_text(
                 column+field_width//2,
                 symp_padding-field_height//2,
@@ -242,14 +244,51 @@ class CycleScreen(ttk.LabelFrame):
                 previous = 0
 
     def draw_symtoms(self):
+        field_width, field_height = self.cell
+        day1 = 2*(self.config['padding']+self.config['label width']) -field_width//2
         for day, symp in enumerate(self.data_displayed['symptoms'],
             -self.config['days offset']):
-            if 0 <= day < self.config['days displayed']:
-                #self.display.create_text(100, 100, text=symp)
-                pass
+            if 0 < day < self.config['days displayed']:
+                self.display.create_text(
+                    day1+day*field_width,
+                    self.symp_bottom-(self.config['symptom height']*2)//3,
+                    text=symp,
+                    font=self.text_font,
+                    )
 
     def draw_comments(self):
-        pass
+        field_width, field_height = self.cell
+        day1 = 2*(self.config['padding']+self.config['label width']
+                ) + field_width//2
+        temp0 = (self.config['padding']
+                +self.config['info height']
+                +field_height*(
+                    self.config['temperature range']
+                    +10*self.config['min temperature']
+                    -1)
+                )
+        for day, (temp, msg) in enumerate(
+            zip(
+                self.data_displayed['temperature'],
+                self.data_displayed['comments']
+                ),
+            -self.config['days offset']
+            ):
+            if temp==0:
+                temp= 10*self.config['min temperature'] * 10 +1
+            x = day1 + field_width * day
+            y = temp0 - field_height * (temp +1)
+            if 0 <= day < self.config['days displayed']:
+                anchor = tk.E
+                if temp < 10*self.config['min temperature']+self.config['temperature range']//2:
+                    anchor=tk.W
+                    y += field_height*2
+                self.display.create_text(
+                    x, y, text=msg,
+                    angle=-90,
+                    font=self.text_font,
+                    anchor=anchor,
+                    fill=self.config['text color'])
 
     def draw_symbols(self):
         pass

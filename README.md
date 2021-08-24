@@ -18,22 +18,25 @@ Controller - handles user interaction
   - Json Model:
     + load from json file
     + export to json file
+    - cycle representation (as class)
     - establish dict structure for model
     - helper function for accessing data
 - Gui:
   - Tkinter viev:
     V welcome screen:
         + renders properly
-        - updates according to configuration
-        - provide list of known users
-    - main window
+        x updates according to configuration
+        - provide list of known users (requires controller callback)
+    V main window
         + empty table
         + surrounding interface
-        - draw temperature
-        - draw symptoms
-        - draw comments
+        + draw temperature
+        + draw symptoms
+        + draw comments
         - draw special characters
-    V config window
+        - bind controller functions to mouse click
+        - menu for adding new data
+    + config window
         + as a separate window
         + splited to categories
         + render properly
