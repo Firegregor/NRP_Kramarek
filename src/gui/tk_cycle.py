@@ -1,11 +1,12 @@
 import logging
 import tkinter as tk
 from tkinter import ttk
+from itertools import zip_longest
 
 
 test_temp_values = [366, 368, 358,365, 365,366]
 test_symp_values = ['','k5','k4','k3','s','mo']
-test_coments_values = ['sda', 'nieprzespana noc', '', 'alkohol']
+test_coments_values = ['sda', 'nieprzespana noc', 'Stres', 'alkohol', '', 'cos']
 
 
 class CycleScreen(ttk.LabelFrame):
@@ -17,31 +18,24 @@ class CycleScreen(ttk.LabelFrame):
 
     def __init__(self, master, config, data, *args, **kwargs):
         self.data = data
-        self.config = config
         super().__init__(master,text=data.get_name(), *args, **kwargs)
         self.display = None
-        self.cell=None
         self.data_displayed = {
             'temperature':test_temp_values+[0]*config['days displayed'],
             'comments':test_coments_values+['']*config['days displayed'],
             'symptoms':test_symp_values+['']*config['days displayed']
             }
-        self.big_font = ' '.join([
-            self.config['font type'],
-            str(self.config['interface size'])])
-        self.text_font = ' '.join([
-            self.config['font type'],
-            str(self.config['text size'])])
-        self.update()
+        self.update(config=config)
 
     def update(self, config=None, data=None):
         logging.info('card update')
         if config is not None:
             logging.debug('New configuration')
             self.config=config
+            self._update_config()
+        self.blank()
         if data is not None:
             self.data_displayed=data
-        self.blank()
         self.draw_data()
         self.display.pack()
 
@@ -51,148 +45,163 @@ class CycleScreen(ttk.LabelFrame):
         """
         if self.display is not None:
             self.display.pack_forget()
-        self.display = tk.Canvas(self, **self.canvas_config)
-        self.draw_empty_card()
+        canvas_params = {key: self.config[key] for key in self.CANVAS}
+        self.display = tk.Canvas(self, **canvas_params)
+        self._create_interface_outline()
+        self._table()
 
-    def draw_empty_card(self):
+    def draw_data(self):
+        self._drawtemperature()
+        self._drawsymtoms()
+        self._drawcomments()
+        self._drawsymbols()
+
+    def _update_config(self):
         # get data from config
         config = self.config
-        total_width = config['width']
-        total_heigth = config['height']
-        padding = config['padding']
-        label_width = config['label width']
-        days = config['days displayed']
-        temp_range = config['temperature range']
-        table_top = padding + config['info height']
-        table_left = 2*(padding + label_width)
-        field_width = (total_width-padding-label_width-table_left)//days
-        field_height = (total_heigth - 2*table_top
-                        - config['symptom height'])//temp_range
-        table_right = table_left + days*field_width
-        table_heigth = temp_range*field_height
-        symp_padding = table_top + table_heigth
-        self.symp_bottom = symp_padding + config['symptom height']
-        fg = config['text color']
-        self.cell = (field_width, field_height)
+        self.total_width = config['width']
+        self.total_heigth = config['height']
+        self.padding = config['padding']
+        self.label_width = config['label width']
+        self.days = config['days displayed']
+        self.delay = config['days offset']
+        self.temp_range = config['temperature range']
+        self.temp_min = config['min temperature']*10
+        self.table_top = self.padding + config['info height']
+        self.table_left = 2*(self.padding + self.label_width)
+        self.field_width = (self.total_width-self.padding-self.label_width-self.table_left)//self.days
+        self.field_height = (self.total_heigth - 2*self.table_top
+                        - config['symptom height'])//self.temp_range
+        self.table_right = self.table_left + self.days*self.field_width
+        self.table_heigth = self.temp_range*self.field_height
+        self.symp_padding = self.table_top + self.table_heigth
+        self.symp_bottom = self.symp_padding + config['symptom height']
+        self.fg = config['text color']
+        self.big_font = ' '.join([
+            config['font type'],
+            str(config['interface size'])])
+        self.text_font = ' '.join([
+            config['font type'],
+            str(config['text size'])])
 
-        # create interface outline
+    def _create_interface_outline(self):
         self.display.create_text(
-            (padding+table_left)//2,
-            (padding + table_top + field_height) // 2,
+            (self.padding+self.table_left)//2,
+            (self.padding + self.table_top + self.field_height) // 2,
             text='Data',
             font=self.big_font,
-            fill=fg,
+            fill=self.fg,
             anchor=tk.E)
         self.display.create_line( # all the way to the top
-            padding,
-            padding,
-            table_right,
-            padding,
+            self.padding,
+            self.padding,
+            self.table_right,
+            self.padding,
             width=2)
         self.display.create_line( # under data
-            padding,
-            table_top + field_height,
-            table_right,
-            table_top+field_height,
+            self.padding,
+            self.table_top + self.field_height,
+            self.table_right,
+            self.table_top+self.field_height,
             width=2)
         self.display.create_line( # between month and day
-            table_left,
-            table_top,
-            table_right,
-            table_top,
+            self.table_left,
+            self.table_top,
+            self.table_right,
+            self.table_top,
             width=2)
         self.display.create_line( # all the way to the bottom
-            padding,
+            self.padding,
             self.symp_bottom,
-            table_right,
+            self.table_right,
             self.symp_bottom,
             width=2)
         self.display.create_line( # under cycle day
-            padding,
-            symp_padding,
-            table_right,
-            symp_padding,
+            self.padding,
+            self.symp_padding,
+            self.table_right,
+            self.symp_padding,
             width=2)
         self.display.create_line( # over cycle day
-            padding,
-            symp_padding - field_height,
-            table_right,
-            symp_padding - field_height,
+            self.padding,
+            self.symp_padding - self.field_height,
+            self.table_right,
+            self.symp_padding - self.field_height,
             width=2)
-
-        # table outline
-        # self.display.create_rectangle(table_left,table_top, table_right, symp_padding, fill='red')
-        self.display.create_line( # table left
-            table_left,
-            padding,
-            table_left,
-            self.symp_bottom,
-            width=2)
-        self.display.create_line( # table right
-            table_right,
-            padding,
-            table_right,
-            self.symp_bottom,
-            width=2)
-        # table vertical
-        for day,column in enumerate(range(table_left, table_right,
-                 field_width),1+config['days offset']):
-            self.display.create_line( # all vertical
-                column,
-                table_top,
-                column,
-                self.symp_bottom)
-            self.display.create_text(
-                column+field_width//2,
-                symp_padding-field_height//2,
-                font=self.text_font,
-                fill=fg,
-                text=day)
-        # table horizontal
-        for temp,row in enumerate(range(symp_padding, table_top,
-             -field_height),int(config['min temperature']*10-1)):
-            self.display.create_line(table_left, row, table_right, row)
-            if (row > table_top + field_height
-               and row < symp_padding - field_height):
-                if not temp % 5:
-                    self.display.create_text(
-                        table_left-field_width,
-                        row,
-                        font=self.text_font,
-                        fill=fg,
-                        text=temp/10)
-                else:
-                    self.display.create_text(
-                        table_left-field_width,
-                        row,
-                        font=self.text_font,
-                        fill=fg,
-                        text=f'.{temp%10}', anchor=tk.W)
-
-        # ovals
-        self._draw_oval(padding+label_width//2,
-                        table_top+table_heigth//4,
-                        'Godzina')
-        self._draw_oval(padding+label_width//2,
-                        table_top+table_heigth//2,
-                        'Miejsce')
-        self._draw_oval(table_right+label_width,
-                        table_top+self.config['oval message'],
-                        'Nr cyklu')
-        self._draw_oval(table_right+label_width,
-                        table_top+table_heigth*3//4,
-                        'Faza niższa')
-        self._draw_oval(table_right+label_width,
-                        symp_padding,
-                        'Długość cyklu')
-
-        # Symptoms
         self.display.create_text(
-            table_left - padding // 2,
-            symp_padding + padding // 5,
+            self.table_left - self.padding // 2,
+            self.symp_padding + self.padding // 5,
             text='Śluz\nszyjkowy:\nodczucie\nwygląd\nilość',
             font=self.text_font,
             anchor=tk.NE)
+        # ovals
+        self._draw_oval(self.padding+self.label_width//2,
+                        self.table_top+self.table_heigth//4,
+                        'Godzina')
+        self._draw_oval(self.padding+self.label_width//2,
+                        self.table_top+self.table_heigth//2,
+                        'Miejsce')
+        self._draw_oval(self.table_right+self.label_width,
+                        self.table_top+self.config['oval message'],
+                        'Nr cyklu')
+        self._draw_oval(self.table_right+self.label_width,
+                        self.table_top+self.table_heigth*3//4,
+                        'Faza niższa')
+        self._draw_oval(self.table_right+self.label_width,
+                        self.symp_padding,
+                        'Długość cyklu')
+
+    def _table(self):
+        # Outline
+        # self.display.create_rectangle(self.table_left,self.table_top, self.table_right, self.symp_padding, fill='red')
+        self.display.create_line( # table left
+            self.table_left,
+            self.padding,
+            self.table_left,
+            self.symp_bottom,
+            width=2)
+        self.display.create_line( # table right
+            self.table_right,
+            self.padding,
+            self.table_right,
+            self.symp_bottom,
+            width=2)
+        # table vertical
+        for day,column in enumerate(
+            range(self.table_left, self.table_right, self.field_width),
+            1+self.delay
+            ):
+            self.display.create_line( # all vertical
+                column,
+                self.table_top,
+                column,
+                self.symp_bottom)
+            self.display.create_text(
+                column+self.field_width//2,
+                self.symp_padding-self.field_height//2,
+                font=self.text_font,
+                fill=self.fg,
+                text=day)
+        # table horizontal
+        for temp,row in enumerate(range(self.symp_padding, self.table_top,
+             -self.field_height),int(self.temp_min - 1)):
+            self.display.create_line(self.table_left, row, self.table_right, row)
+            if (row > self.table_top + self.field_height
+               and row < self.symp_padding - self.field_height):
+                if not temp % 5:
+                    self.display.create_text(
+                        self.table_left-self.field_width,
+                        row,
+                        font=self.text_font,
+                        fill=self.fg,
+                        text=temp/10)
+                else:
+                    self.display.create_text(
+                        self.table_left-self.field_width,
+                        row,
+                        font=self.text_font,
+                        fill=self.fg,
+                        text=f'.{temp%10}', anchor=tk.W)
 
     def _draw_oval(self, x, y, msg=''):
         size = self.config["oval size"]
@@ -202,87 +211,69 @@ class CycleScreen(ttk.LabelFrame):
             font=self.text_font,
             text=msg)
 
-    @property
-    def canvas_config(self):
-        return {key: val for key,val in self.config.items()
-                     if key in self.CANVAS}
-
-    def draw_data(self):
-        self.draw_temperature()
-        self.draw_symtoms()
-        self.draw_comments()
-        self.draw_symbols()
-
-    def draw_temperature(self):
-        field_width, field_height = self.cell
+    def _drawtemperature(self):
         size = self.config["dot size"]
         day1 = 2*(self.config['padding']+self.config['label width']
-                ) + field_width//2
+                ) + self.field_width//2
         temp0 = (self.config['padding']
                 +self.config['info height']
-                +field_height*(
+                +self.field_height*(
                     self.config['temperature range']
                     +10*self.config['min temperature']
                     -1)
                 )
         previous=0
         for day, temp in enumerate(self.data_displayed['temperature'],
-            -self.config['days offset']):
-            x = day1 + field_width * day
-            y = temp0 - field_height * temp
+            -self.delay):
+            x = day1 + self.field_width * day
+            y = temp0 - self.field_height * temp
             orect = [x-size, y-size, x+size, y+size]
             if (temp > 10*self.config['min temperature'] 
                 and 0 <= day < self.config['days displayed']):
                 self.display.create_oval(*orect, fill=self.config['text color'])
                 if previous > 0 and 10*self.config['min temperature']:
                     self.display.create_line(
-                        x, y, x-field_width, previous,
+                        x, y, x-self.field_width, previous,
                         width=self.config['dot size']
                         )
                 previous = y
             else:
                 previous = 0
 
-    def draw_symtoms(self):
-        field_width, field_height = self.cell
-        day1 = 2*(self.config['padding']+self.config['label width']) -field_width//2
+    def _drawsymtoms(self):
+        day1 = 2*(self.padding+self.label_width) -self.field_width//2
         for day, symp in enumerate(self.data_displayed['symptoms'],
-            -self.config['days offset']):
+            -self.delay):
             if 0 < day < self.config['days displayed']:
                 self.display.create_text(
-                    day1+day*field_width,
+                    day1+day*self.field_width,
                     self.symp_bottom-(self.config['symptom height']*2)//3,
                     text=symp,
                     font=self.text_font,
                     )
 
-    def draw_comments(self):
-        field_width, field_height = self.cell
-        day1 = 2*(self.config['padding']+self.config['label width']
-                ) + field_width//2
-        temp0 = (self.config['padding']
-                +self.config['info height']
-                +field_height*(
-                    self.config['temperature range']
-                    +10*self.config['min temperature']
-                    -1)
-                )
+    def _drawcomments(self):
+        day1 = 2*(self.padding+self.label_width) + self.field_width//2
+        temp0 = (self.table_top + self.field_height
+             * (self.temp_range+self.temp_min-1))
         for day, (temp, msg) in enumerate(
             zip(
                 self.data_displayed['temperature'],
                 self.data_displayed['comments']
                 ),
-            -self.config['days offset']
+            -self.delay
             ):
-            if temp==0:
-                temp= 10*self.config['min temperature'] * 10 +1
-            x = day1 + field_width * day
-            y = temp0 - field_height * (temp +1)
+            x = day1 + self.field_width * day
+            if temp < self.temp_min:
+                y = temp0 - int(self.field_height * (self.temp_min +0.5))
+            else:
+                y = temp0 - self.field_height * (temp +1)
             if 0 <= day < self.config['days displayed']:
                 anchor = tk.E
-                if temp < 10*self.config['min temperature']+self.config['temperature range']//2:
+                if self.temp_min < temp < self.temp_min+self.temp_range//2:
                     anchor=tk.W
-                    y += field_height*2
+                    y += self.field_height*2
+                # logging.debug(f'Symptom x={x},y={y} - msg={msg} ')
                 self.display.create_text(
                     x, y, text=msg,
                     angle=-90,
@@ -290,10 +281,11 @@ class CycleScreen(ttk.LabelFrame):
                     anchor=anchor,
                     fill=self.config['text color'])
 
-    def draw_symbols(self):
+    def _drawsymbols(self):
         pass
 
     def __str__(self):
         return f"Frame containing cycle viev"
+
 
 
