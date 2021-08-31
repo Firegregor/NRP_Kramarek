@@ -16,12 +16,6 @@ class TkViev(NrpViev):
     initialized = False
     cycle = None
 
-    def __init__(self, set_config):
-        self.root = tk.Tk()
-        #self.root.geometry('1000x1000')
-        self.initialized = True
-        self.set_config = set_config
-
     @classmethod
     def welcome(cls, model_load):
         logging.info("welcome method called")
@@ -61,10 +55,6 @@ class TkViev(NrpViev):
             ).grid(row=2, column=2, padx=PADDING, pady=PADDING)
         window.mainloop()
 
-    def mainloop(self):
-        logging.debug('TkViev mainloop starts')
-        self.root.mainloop()
-
     @classmethod
     def default_config(cls):
         return ConfigScreen.get_defaults()
@@ -89,6 +79,16 @@ class TkViev(NrpViev):
         if self.initialized:
             self.root.configure(background=self.config['Colors']['background'])
             self.root.geometry(self.config['General']['geometry'])
+
+    def __init__(self, set_config):
+        self.root = tk.Tk()
+        #self.root.geometry('1000x1000')
+        self.initialized = True
+        self.set_config = set_config
+
+    def mainloop(self):
+        logging.debug('TkViev mainloop starts')
+        self.root.mainloop()
 
     def draw_card(self, data, name):
         self.root.title(name)
