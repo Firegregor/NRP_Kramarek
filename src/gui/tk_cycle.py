@@ -7,6 +7,7 @@ from itertools import zip_longest
 test_temp_values = [366, 368, 358,365, 365,366]
 test_symp_values = ['','k5','k4','k3','s','mo']
 test_coments_values = ['sda', 'nieprzespana noc', 'Stres', 'alkohol', '', 'cos']
+test_symbol_values = {}
 
 
 class CycleScreen(ttk.LabelFrame):
@@ -23,7 +24,8 @@ class CycleScreen(ttk.LabelFrame):
         self.data_displayed = {
             'temperature':test_temp_values+[0]*config['days displayed'],
             'comments':test_coments_values+['']*config['days displayed'],
-            'symptoms':test_symp_values+['']*config['days displayed']
+            'symptoms':test_symp_values+['']*config['days displayed'],
+            'special': test_symbol_values
             }
         self.update(config=config)
 
@@ -37,6 +39,7 @@ class CycleScreen(ttk.LabelFrame):
         if data is not None:
             self.data_displayed=data
         self.draw_data()
+        self.display.bind('<ButtonPress-1>', self.mouse_handler)
         self.display.pack()
 
     def blank(self):
@@ -55,6 +58,25 @@ class CycleScreen(ttk.LabelFrame):
         self._drawsymtoms()
         self._drawcomments()
         self._drawsymbols()
+
+    def mouse_handler(self, event):
+        logging.info(f'Mouse Handler position: {event.x}x {event.y}y')
+        config = self.config
+        day = (event.x - self.day1) // self.field_width + 1 + self.delay
+        temp = (self.symp_padding - event.y - self.field_height/2) // self.field_height + self.temp_min
+        # logging.debug(f'Mouse Handler interpret: day={day} temp={temp}')
+        if self.delay < day < self.days + self.delay:
+            # self.data.add_temperature(temp)
+            if self.temp_min <= temp < self.temp_min + self.temp_range - 2:
+                logging.debug(f'Add temperature: {temp/10} on day {day}')
+            else:
+                logging.debug(f'Add special character on day {day}')
+        else:
+            if day < self.delay and self.delay >0:
+                config['days offset'] -= 1
+            if day > self.delay:
+                config['days offset'] += 1
+            self.update(config)
 
     def _update_config(self):
         # get data from config
@@ -83,6 +105,8 @@ class CycleScreen(ttk.LabelFrame):
         self.text_font = ' '.join([
             config['font type'],
             str(config['text size'])])
+
+        self.day1 = 2*(self.padding+self.label_width) + self.field_width//2
 
     def _create_interface_outline(self):
         self.display.create_text(
@@ -213,8 +237,6 @@ class CycleScreen(ttk.LabelFrame):
 
     def _drawtemperature(self):
         size = self.config["dot size"]
-        day1 = 2*(self.config['padding']+self.config['label width']
-                ) + self.field_width//2
         temp0 = (self.config['padding']
                 +self.config['info height']
                 +self.field_height*(
@@ -225,7 +247,7 @@ class CycleScreen(ttk.LabelFrame):
         previous=0
         for day, temp in enumerate(self.data_displayed['temperature'],
             -self.delay):
-            x = day1 + self.field_width * day
+            x = self.day1 + self.field_width * day
             y = temp0 - self.field_height * temp
             orect = [x-size, y-size, x+size, y+size]
             if (temp > 10*self.config['min temperature'] 
@@ -241,19 +263,17 @@ class CycleScreen(ttk.LabelFrame):
                 previous = 0
 
     def _drawsymtoms(self):
-        day1 = 2*(self.padding+self.label_width) -self.field_width//2
         for day, symp in enumerate(self.data_displayed['symptoms'],
             -self.delay):
             if 0 < day < self.config['days displayed']:
                 self.display.create_text(
-                    day1+day*self.field_width,
+                    self.day1+day*self.field_width,
                     self.symp_bottom-(self.config['symptom height']*2)//3,
                     text=symp,
                     font=self.text_font,
                     )
 
     def _drawcomments(self):
-        day1 = 2*(self.padding+self.label_width) + self.field_width//2
         temp0 = (self.table_top + self.field_height
              * (self.temp_range+self.temp_min-1))
         for day, (temp, msg) in enumerate(
@@ -263,7 +283,7 @@ class CycleScreen(ttk.LabelFrame):
                 ),
             -self.delay
             ):
-            x = day1 + self.field_width * day
+            x = self.day1 + self.field_width * day
             if temp < self.temp_min:
                 y = temp0 - int(self.field_height * (self.temp_min +0.5))
             else:

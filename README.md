@@ -34,7 +34,7 @@ Controller - handles user interaction
         + draw symptoms
         + draw comments
         - draw special characters
-        - bind controller functions to mouse click
+        + bind controller functions to mouse click
         - menu for adding new data
     + config window
         + as a separate window
