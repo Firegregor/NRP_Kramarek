@@ -137,16 +137,25 @@ class ConfigScreen(tk.Frame):
                      for key,val in self.CONFIG_TYPE[category].items()}
             logging.debug(f'{category}: params created')
             for i, (key, wid) in enumerate(self.params[category].items()):
-                tk.Label(frame, text=key, bg=BG
-                        ).grid(row=i, column=0, padx=PADDING, pady=PADDING)
+                tk.Label(
+                    frame,
+                    text=key,
+                    bg=BG
+                    ).grid(row=i, column=0, padx=PADDING, pady=PADDING)
                 wid.grid(row=i, column=1,padx=PADDING, pady=PADDING)
             logging.debug(f"{category}: params displayed")
             frame.pack(fill=tk.BOTH)
         self.set_values(config)
         ttk.Button(self ,text="Default",
          command=lambda: self.set_values(self.get_defaults())).pack()
-        ttk.Button(self ,text="Ok", command=self.save_current).pack(side=tk.LEFT)
-        ttk.Button(self ,text="Cancel", command=self.done).pack(side=tk.RIGHT)
+        ttk.Button(self,
+            text="Ok",
+            command=self.save_current
+            ).pack(side=tk.LEFT)
+        ttk.Button(self,
+            text="Cancel",
+            command=self.done
+            ).pack(side=tk.RIGHT)
         self.pack()
 
     @classmethod
@@ -172,5 +181,6 @@ class ConfigScreen(tk.Frame):
     def done(self, *args):
         logging.info(f"close config window")
         self.window.destroy()
+
 
 

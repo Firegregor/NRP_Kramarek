@@ -5,6 +5,7 @@ from tkinter import ttk
 from src.gui.interface import NrpViev
 from src.gui.tk_config import ConfigScreen
 from src.gui.tk_cycle import CycleScreen
+from src.gui.tk_form import CycleScreen
 
 
 class TkViev(NrpViev):
@@ -15,12 +16,6 @@ class TkViev(NrpViev):
     config = {}
     initialized = False
     cycle = None
-
-    def __init__(self, set_config):
-        self.root = tk.Tk()
-        #self.root.geometry('1000x1000')
-        self.initialized = True
-        self.set_config = set_config
 
     @classmethod
     def welcome(cls, model_load):
@@ -61,10 +56,6 @@ class TkViev(NrpViev):
             ).grid(row=2, column=2, padx=PADDING, pady=PADDING)
         window.mainloop()
 
-    def mainloop(self):
-        logging.debug('TkViev mainloop starts')
-        self.root.mainloop()
-
     @classmethod
     def default_config(cls):
         return ConfigScreen.get_defaults()
@@ -90,11 +81,18 @@ class TkViev(NrpViev):
             self.root.configure(background=self.config['Colors']['background'])
             self.root.geometry(self.config['General']['geometry'])
 
+    def mainloop(self):
+        logging.debug('TkViev mainloop starts')
+        self.root.mainloop()
+
     def draw_card(self, data, name):
         self.root.title(name)
         self.cycle = CycleScreen(self.root, self.config['Cycle'], data)
         self.cycle.pack(side=tk.LEFT)
-        ttk.Button(text='Config', command=lambda: self.config_screen(cycle=self.cycle)).pack(side=tk.LEFT)
+        ttk.Button(
+            text='Config',
+            command=lambda: self.config_screen(cycle=self.cycle)
+            ).pack(side=tk.LEFT)
 
 
 

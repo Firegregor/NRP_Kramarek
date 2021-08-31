@@ -1,7 +1,6 @@
 import logging
 import tkinter as tk
 from tkinter import ttk
-from itertools import zip_longest
 
 
 test_temp_values = [366, 368, 358,365, 365,366]
