@@ -5,7 +5,6 @@ from tkinter import ttk
 from src.gui.interface import NrpViev
 from src.gui.tk_config import ConfigScreen
 from src.gui.tk_cycle import CycleScreen
-from src.gui.tk_form import CycleScreen
 
 
 class TkViev(NrpViev):
@@ -80,6 +79,12 @@ class TkViev(NrpViev):
         if self.initialized:
             self.root.configure(background=self.config['Colors']['background'])
             self.root.geometry(self.config['General']['geometry'])
+
+    def __init__(self, set_config):
+        self.root = tk.Tk()
+        #self.root.geometry('1000x1000')
+        self.initialized = True
+        self.set_config = set_config
 
     def mainloop(self):
         logging.debug('TkViev mainloop starts')

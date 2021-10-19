@@ -25,7 +25,7 @@ Controller - handles user interaction
   - Tkinter viev:
     V welcome screen:
         + renders properly
-        x updates according to configuration
+        - separate global configuration to chose model and viev
         - provide list of known users (requires controller callback)
     V main window
         + empty table
@@ -33,14 +33,15 @@ Controller - handles user interaction
         + draw temperature
         + draw symptoms
         + draw comments
-        - draw special characters
         + bind controller functions to mouse click
+        - draw special characters
         - menu for adding new data
     + config window
         + as a separate window
         + splited to categories
         + render properly
         + update configuration properly
+        - more user friendly way of selecting color
 - Controller:
   Nrp:
     + initializing seqience
