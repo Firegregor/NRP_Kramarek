@@ -15,6 +15,11 @@ Controller - handles user interaction
 ## Details
 
 - Model:
+  - Cycle Dataclass:
+    + initialization
+    + getters for day based data
+    - geters for types of data
+    V setters for date based operation
   - Json Model:
     + load from json file
     + export to json file
@@ -23,11 +28,11 @@ Controller - handles user interaction
     - helper function for accessing data
 - Gui:
   - Tkinter viev:
-    V welcome screen:
+    - welcome screen:
         + renders properly
         - separate global configuration to chose model and viev
         - provide list of known users (requires controller callback)
-    V main window
+    - main window
         + empty table
         + surrounding interface
         + draw temperature
@@ -36,7 +41,7 @@ Controller - handles user interaction
         + bind controller functions to mouse click
         - draw special characters
         - menu for adding new data
-    + config window
+    - config window
         + as a separate window
         + splited to categories
         + render properly
