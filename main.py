@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-import sys
+import argparse
 import logging
 import unittest
 from src import TkViev, JsonModel ,NRP
-from test import model_tests
+from test.model.cycle_test import TestCycle
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
     app = NRP(JsonModel, TkViev)
 
 if __name__ == "__main__":
-    if len(sys.argv) > 0:
-        unittest.main()
-    else:
+    unittest.main()
+    print('Tests are ok')
+    if 0:
         main()
